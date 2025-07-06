@@ -40,10 +40,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 40px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 12px 20px;
+  width: 100%;
+  margin: 0;
   font-family: 'Gotham', sans-serif;
+  box-sizing: border-box;
 }
 
 .left-section {
@@ -80,6 +81,8 @@ export default {
   flex: 1; /* take remaining space */
   display: flex;
   justify-content: center;
+  max-width: 600px;
+  margin: 0 20px;
 }
 
 .search-bar input {

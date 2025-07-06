@@ -1,46 +1,81 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import redis
 import json
+import os
 
 app = Flask(__name__)
-CORS(app)
-r = redis.Redis(host='localhost', port=6379, db=0)
 
-@app.route("/scraped-content", methods=["GET"])
-def get_scraped_content():
-    """
-    TODO: Implement an API to retrieve scraped content from Redis.
-    This endpoint should do the following:
-    2. Retrieve the scraped content from Redis.
-    4. If no data is found, return a 404 error with a message.
-    5. If data is found, return a success response with the data in JSON format.
-    """
-    data = r.get("scraped_content")
-    if data:
-        return jsonify({"success": True, "data": json.loads(data)})
-    else:
-        return jsonify({"success": False, "message": "No data found"}), 404
+# CORS configuration - allow multiple origins for development
+CORS(app, origins=[
+    "http://localhost:8080",  # Vue CLI default
+    "http://localhost:3000",  # Alternative Vue dev server
+    "http://127.0.0.1:8080",  # IP version
+    "http://127.0.0.1:3000",  # IP version alternative
+    "http://localhost:5173",  # Vite default
+    "http://127.0.0.1:5173",  # Vite IP version
+    "http://localhost:8000",  # Backend port
+    "http://127.0.0.1:8000",  # Backend port IP version
+], supports_credentials=True, methods=["GET", "POST", "OPTIONS"])
 
-@app.route("/products", methods=["GET"])
-def get_products():
-    """
-    This endpoint returns a list of products with their details.
-    """
-    return [
-        {"product_id": "1", "title": "Smart LED TV 32 inch", "price": "₹20,000", "sale_price": "₹18,000", "discount_message": "10% off"},
-        {"product_id": "2", "title": "4K UHD Smart TV 43 inch", "price": "₹35,000", "sale_price": "₹31,500", "discount_message": "10% off"},
-        {"product_id": "3", "title": "OLED TV 55 inch", "price": "₹1,20,000", "sale_price": "₹1,08,000", "discount_message": "10% off"},
-        {"product_id": "4", "title": "Soundbar with Subwoofer", "price": "₹15,000", "sale_price": "₹13,500", "discount_message": "10% off"},
-        {"product_id": "5", "title": "TV Wall Mount", "price": "₹2,000", "sale_price": "₹1,800", "discount_message": "10% off"},
-        {"product_id": "6", "title": "Streaming Stick", "price": "₹4,000", "sale_price": "₹3,600", "discount_message": "10% off"},
-        {"product_id": "7", "title": "Smart LED TV 40 inch", "price": "₹25,000", "sale_price": "₹22,500", "discount_message": "10% off"},
-        {"product_id": "8", "title": "Bluetooth Speakers", "price": "₹5,000", "sale_price": "₹4,500", "discount_message": "10% off"},
-        {"product_id": "9", "title": "4K Smart LED TV 50 inch", "price": "₹45,000", "sale_price": "₹40,500", "discount_message": "10% off"},
-        {"product_id": "10", "title": "TV Remote", "price": "₹1,500", "sale_price": "₹1,350", "discount_message": "10% off"}
-    ]
+# Redis connection - use environment variable or default to 'redis' (Docker service name)
+redis_host = os.getenv('REDIS_HOST', 'redis')
+redis_port = int(os.getenv('REDIS_PORT', 6379))
 
+print(f"Flask app connecting to Redis at {redis_host}:{redis_port}")
 
+try:
+    r = redis.Redis(host=redis_host, port=redis_port, db=0, decode_responses=True)
+    # Test connection on startup
+    r.ping()
+    print("Successfully connected to Redis")
+except redis.ConnectionError as e:
+    print(f"ERROR: Could not connect to Redis at {redis_host}:{redis_port}")
+    print(f"Error details: {str(e)}")
+    r = None
+
+@app.route("/scraped-products", methods=["GET", "OPTIONS"])
+def get_scraped_products():
+    # Handle CORS preflight requests
+    if request.method == "OPTIONS":
+        return "", 200
+    
+    if r is None:
+        return jsonify({"success": False, "message": "Redis connection not available"}), 500
+    
+    try:
+        data = r.get("scraped_products")
+        if data:
+            products = json.loads(data)
+            print(f"Retrieved {len(products)} products from Redis")
+            return jsonify({"success": True, "data": products})
+        else:
+            print("No data found in Redis")
+            return jsonify({"success": False, "message": "No data found in Redis"}), 404
+    except redis.RedisError as e:
+        print(f"Redis error: {str(e)}")
+        return jsonify({"success": False, "message": f"Redis error: {str(e)}"}), 500
+    except json.JSONDecodeError as e:
+        print(f"JSON decode error: {str(e)}")
+        return jsonify({"success": False, "message": f"Data format error: {str(e)}"}), 500
+    except Exception as e:
+        print(f"Unexpected error: {str(e)}")
+        return jsonify({"success": False, "message": f"Unexpected error: {str(e)}"}), 500
+
+@app.route("/health", methods=["GET", "OPTIONS"])
+def health_check():
+    # Handle CORS preflight requests
+    if request.method == "OPTIONS":
+        return "", 200
+        
+    if r is None:
+        return jsonify({"status": "unhealthy", "message": "Redis not connected"}), 500
+    
+    try:
+        r.ping()
+        return jsonify({"status": "healthy", "message": "Redis connected"})
+    except:
+        return jsonify({"status": "unhealthy", "message": "Redis connection failed"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=5000)

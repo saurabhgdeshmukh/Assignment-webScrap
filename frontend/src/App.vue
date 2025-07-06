@@ -1,23 +1,24 @@
 <template>
   <div class="app">
-  <div class="header">
-   <Navbar />
-  </div>
-  <div class="container">
-    <h5>Televisions & Accessories</h5>
-    <h2>Televisions & Accessories</h2>
-    <div class="product-grid">
-      <Product
-        v-for="product in products"
-        :key="product.title"
-        :product="product"
-      />
+    <Navbar />
+    <div class="section-header">
+      <div class="subtitle">Televisions & Accessories</div>
+      <div class="title">Televisions & Accessories <span class="count">({{ products.length }})</span></div>
     </div>
-  </div>
+    <div class="product-grid-wrapper">
+      <div class="product-grid">
+        <Product
+          v-for="product in products"
+          :key="product.title"
+          :product="product"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 import Product from "@/components/Product.vue";
 import Navbar from "@/components/Navbar.vue";
 
@@ -29,232 +30,112 @@ export default {
   },
   data() {
     return {
-      products: [
-        
-      ],
+      products: [],
     };
   },
-
   mounted() {
-    // Mock the fetch for now
-   this.products = [
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
+    this.fetchProducts();
   },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
-  },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
-  },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
-  },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
-  },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-  {
-    product_id: "1",
-    title: "Croma 109 cm (43 inch) Full HD LED Smart Linux TV with Bezel Less Display",
-    price: "₹15,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹2,010",
-    rating: "3.5",
-    reviews: 96,
-    stock: "In Stock",
-    category: "Television",
-    description: "A smart TV with bezel-less design and HD display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510439/Croma%20Assets/Entertainment/Television/Images/301734_0_vu5bzj.png?tr=w-360",
-    link: "https://www.croma.com/product1"
-  },
-  {
-    product_id: "2",
-    title: "Croma 139.7 cm (55 inch) 4K Ultra HD LED Google TV with Google Voice Assistant",
-    price: "₹30,990",
-    sale_price: "₹18,000",
-    discount_message: "Save ₹12,990",
-    rating: "4.2",
-    reviews: 152,
-    stock: "Limited Stock",
-    category: "Television",
-    description: "A 4K UHD TV with voice control and immersive display.",
-    image: "https://media-ik.croma.com/prod/https://media.croma.com/image/upload/v1729510459/Croma%20Assets/Entertainment/Television/Images/273733_0_w8e4qb.png?tr=w-360",
-    link: "https://www.croma.com/product2"
-  },
-];
-
+  methods: {
+    async fetchProducts() {
+      try {
+        // Use proxy configuration to avoid CORS issues
+        const response = await axios.get("/api/scraped-products");
+        if (response.data.success) {
+          this.products = response.data.data;
+        } else {
+          console.error("No products found:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    },
   },
 };
 </script>
 
+
 <style scoped>
 .app {
   font-family: 'Gotham', sans-serif;
-  background-color: #121212;
+  background-color: #181818;
   color: #fff;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  box-sizing: border-box;
 }
 
-.header {
-  background-color: #000;
-  padding: 10px;
-  text-align: center;
-  font-size: 24px;
+.section-header {
+  margin: 0;
+  padding: 40px 0 0 0;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.subtitle {
+  font-size: 18px;
+  color: #bdbdbd;
+  font-weight: 500;
+  margin-bottom: 0.2em;
+  margin-left: 8px;
+}
+.title {
+  font-size: 2.5rem;
   font-weight: bold;
-}
-
-.header span {
   color: #fff;
+  margin-bottom: 0.5em;
+  margin-left: 8px;
+}
+.count {
+  color: #bdbdbd;
+  font-size: 1.2rem;
+  font-weight: 400;
 }
 
-.container {
-  padding: 40px;
-  background-color:#121212 
+.product-grid-wrapper {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
-  gap: 30px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 40px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 0 0 0;
 }
 
-@media (min-width: 600px) {
+@media (max-width: 900px) {
   .product-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    padding: 24px 0 0 0;
+  }
+  .section-header {
+    padding: 24px 0 0 0;
   }
 }
 
-@media (min-width: 900px) {
-  .product-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* Global styles to remove default margins and padding */
+:global(*) {
+  box-sizing: border-box;
 }
 
+:global(body) {
+  margin: 0;
+  padding: 0;
+  font-family: 'Gotham', sans-serif;
+}
 
+:global(html) {
+  margin: 0;
+  padding: 0;
+}
 </style>
